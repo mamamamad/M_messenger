@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>app1</title>
+
+    <link rel="stylesheet" href="css/style1.css">
+</head>
+<body>
+    <p id="p1">
+        hello i am mohammad
+        <input type="text" >
+        <input type="text" >
+
+    </p>
+    
+</html>
+
+
+
+server {
+    listen 81;
+    
+    server_name ;
+
+    root /var/www/mamamamad.ir;
+    index index.html;
+
+    location / {
+            try_files $uri $uri/ =404;
+    }
+}

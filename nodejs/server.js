@@ -25,7 +25,6 @@ const io = new Server(server, {
 io.on("connection", (socket) => {
     console.log(`New user connected: ${socket.id}`);
 
-    // Register user and store their socket ID
     socket.on("register", (username) => {
         UsersSocketId[username] = socket.id;
         localStorage.setItem("username", username);
@@ -35,7 +34,7 @@ io.on("connection", (socket) => {
     // Handle public messages
     socket.on("message", (data) => {
         console.log("Received:", data);
-        socket.broadcast.emit("message", `${data}`); // Send to all users except sender
+        socket.broadcast.emit("message", `${data}`); 
     });
 
     // Handle private messages

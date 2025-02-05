@@ -11,10 +11,6 @@
 </head>
 <body>
     <div class="container">
-        <h1>Enter Your Username:</h1>
-        <input type="text" id="username">
-        <button onclick="registerUser()">Register</button>
-
         <h1>Send a Message:</h1>
         <input type="text" id="text_id">
         <select id="users" name="user">
@@ -31,7 +27,10 @@
 
         socket.on("connect", () => {
             console.log("Connected to WebSocket on /app1");
-            fetchUsers(); // Load users list when connected
+            username = localStorage.getItem("username");
+            console.log(username)
+            socket.emit("register", username);
+            fetchUsers();
         });
 
         socket.on("disconnect", () => {
@@ -39,6 +38,7 @@
         });
 
         async function fetchUsers() {
+        
             try {
                 const response = await fetch("http://localhost:3000/users");
                 const users = await response.json();
@@ -53,6 +53,7 @@
                     select.appendChild(option);
                 });
             } catch (error) {
+                console.log("errooos")
                 console.error("Failed to fetch users:", error);
             }
         }

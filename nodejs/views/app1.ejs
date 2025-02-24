@@ -23,6 +23,7 @@
     </div>
 
     <script>
+        const config = require("./../config.js");
         const socket = io("http://localhost:3000", { path: "/app1" });
 
         socket.on("connect", () => {
@@ -40,7 +41,7 @@
         async function fetchUsers() {
         
             try {
-                const response = await fetch("http://localhost:3000/users");
+                const response = await fetch(config.domain);
                 const users = await response.json();
 
                 const select = document.getElementById("users");

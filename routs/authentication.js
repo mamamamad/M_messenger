@@ -77,6 +77,7 @@ function findUser(username, password) {
     }
     
     const user = results[0]; 
+    console.log(user);
     if (user.password === password) {
       return (username, true); 
     } else {

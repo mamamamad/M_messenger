@@ -64,23 +64,23 @@ Router.post("/", (req, res) => {
 });
 
 
-function findUser(username, password, callback) {
+function findUser(username, password) {
   const query = "SELECT username, password FROM users WHERE username = ?";
   
   con.query(query, [username], (err, results) => {
     if (err) {
-      return callback(err, null);
+      return (err, null);
     }
     
     if (results.length === 0) {
-      return callback(null, false);
+      return (null, false);
     }
     
     const user = results[0]; 
     if (user.password === password) {
-      return callback(username, true); 
+      return (username, true); 
     } else {
-      return callback(null, false);
+      return (null, false);
     }
   });
 }

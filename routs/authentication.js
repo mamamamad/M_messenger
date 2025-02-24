@@ -66,13 +66,14 @@ Router.post("/", (req, res) => {
 
 function findUser(username, password) {
   const query = "SELECT username, password FROM users WHERE username = ?";
-  console.log("hi")
+  console.log("hi",username)
   con.query(query, [username], (err, results) => {
     if (err) {
       return (err, null);
     }
     
     if (results.length === 0) {
+      console.log("not exist user.")
       return (null, false);
     }
     
@@ -81,6 +82,7 @@ function findUser(username, password) {
     if (user.password === password) {
       return (username, true); 
     } else {
+      console.log("error in pass or user.")
       return (null, false);
     }
   });

@@ -64,17 +64,24 @@ Router.post("/", (req, res) => {
 });
 
 
-function findUser(username,password) {
+function findUser(username, password, callback) {
+  const query = "SELECT username, password FROM users WHERE username = ?";
   
-  con.connect(function(err) {
-    if (err) throw err;
-    con.query("SELECT username, password FROM users", function (err, result, fields) {
-      if (err) throw err;
-      if (password === result.password && username===result.username){
-        return (username,password)
-      }
-    });
-  });
+  con.query(query, [username], (err, results) => {
+    if (err) {
+      return callback(err, null);
+    }
     
+    if (results.length === 0) {
+      return callback(null, false);
+    }
+    
+    const user = results[0]; 
+    if (user.password === password) {
+      return callback(username, true); 
+    } else {
+      return callback(null, false);
+    }
+  });
 }
 module.exports = Router

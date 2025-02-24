@@ -66,7 +66,7 @@ Router.post("/", (req, res) => {
 
 function findUser(username, password) {
   const query = "SELECT username, password FROM users WHERE username = ?";
-  
+  console.log("hi")
   con.query(query, [username], (err, results) => {
     if (err) {
       return (err, null);

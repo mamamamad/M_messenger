@@ -7,6 +7,7 @@ const localStorage = new LocalStorage("./scratch");
 const config = require("./config.js");
 const db_config = require("./../db_config.js");
 const mysql = require('mysql');
+const cors = require("cors")
 
 var con = mysql.createConnection({
   host: db_config.host,

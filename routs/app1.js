@@ -1,7 +1,7 @@
 const express = require('express')
 const Router = express('roter')
 const path = require("path")
-const config = require("./config.js");
+const config = require("./../config.js");
 
  
 

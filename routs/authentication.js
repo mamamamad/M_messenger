@@ -74,17 +74,17 @@ function findUser(username, password) {
     
     if (results.length === 0) {
       console.log("not exist user.")
-      return (null, false);
+      resolve(false);
     }
     
     const user = results[0]; 
     console.log(user);
     if (user.password === password) {
       console.log("find user.")
-      return (username, true); 
+      resolve(true);
     } else {
       console.log("error in pass or user.")
-      return (null, false);
+      resolve(false);
     }
   });
 }

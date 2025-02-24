@@ -1,13 +1,24 @@
 const express = require('express')
 const Router = express('roter')
 const path = require("path")
-const users = require("./../models/users.js")
-const fs = require("fs")
-const crypto = require("crypto");
 const session = require('express-session');
 const { LocalStorage } = require("node-localstorage");
 const localStorage = new LocalStorage("./scratch");
-const config = require("./../config.js");
+const config = require("./config.js");
+const db_config = require("./../db_config.js");
+const mysql = require('mysql');
+
+var con = mysql.createConnection({
+  host: db_config.host,
+  user: db_config.user,
+  password: db_config.password
+});
+con.connect(function(err) {
+  if (err) throw err;
+  console.log("Connected!");
+});
+
+
 
 Router.set('views', path.join(config.views_path,"views"));
 Router.set("view engine" , "ejs")
@@ -22,17 +33,18 @@ Router.use(session({
     cookie: { maxAge: 600000 } 
 }));
 
-Router.get('/',(req,res)=>{ 
-    res.render('authenthication.ejs')
+
+
+
+Router.get('/singup',(req,res)=>{ 
+  res.render('authenthication.ejs')
 })
 
-Router.get('/users',(req,res)=>{ 
-  if(!req.session.autotoken){
-    console.log("faild")
-    return res.status(403).redirect('/');
-  }
-  res.send(users)
+Router.get('/',(req,res)=>{ 
+  res.render('authenthication.ejs')
 })
+
+
 Router.post("/", (req, res) => {
 
   const { username, password } = req.body; 
@@ -49,18 +61,19 @@ Router.post("/", (req, res) => {
     res.redirect('/')   
   }
 });
-// Route for accessing the users list (requires login)
-Router.get('/users', (req, res) => {
-  if (!req.session.autotoken) {
-    console.log("Failed");
-    return res.status(403).redirect('/');
-  }
-  res.send(users);
-});
 
 
 function findUser(username,password) {
   
-    return users.find(user => user.username === username && user.password === password);
+  con.connect(function(err) {
+    if (err) throw err;
+    con.query("SELECT username, password FROM users", function (err, result, fields) {
+      if (err) throw err;
+      if (password === result.password && username===result.username){
+        return (username,password)
+      }
+    });
+  });
+    
 }
 module.exports = Router

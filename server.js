@@ -4,7 +4,6 @@ const { Server } = require("socket.io");
 const http = require("http");
 const { LocalStorage } = require("node-localstorage");
 const localStorage = new LocalStorage("./scratch");
-
 let UsersSocketId = {};  // Store usernames and socket IDs
 
 const authenthication_route = require("./routs/authentication.js");

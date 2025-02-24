@@ -23,8 +23,8 @@
     </div>
 
     <script>
-        const config = require("./../config.js");
-        const socket = io("http://localhost:3000", { path: "/app1" });
+        const config = require("./config.js");
+        const socket = io(config.domain, { path: "/app1" });
 
         socket.on("connect", () => {
             console.log("Connected to WebSocket on /app1");

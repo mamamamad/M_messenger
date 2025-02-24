@@ -26,7 +26,6 @@ io.on("connection", (socket) => {
 
     socket.on("register", (username) => {
         UsersSocketId[username] = socket.id;
-        localStorage.setItem("username", username);
         console.log(`User ${username} registered with socket ID: ${socket.id}`);
     });
 
@@ -37,26 +36,24 @@ io.on("connection", (socket) => {
     });
 
     // Handle private messages
-    socket.on("private message", ({ sender,recipientUsername, message }) => {
-        console.log(recipientUsername,message)
+    socket.on("private message", ({ sender, recipientUsername, message }) => {
         const recipientId = UsersSocketId[recipientUsername];
         if (recipientId) {
-            io.to(recipientId).emit("private message", {
-                sender: sender,
-                message,
-            });
+            io.to(recipientId).emit("private message", { sender, message });
             console.log(`Private message sent to ${recipientUsername}: ${message}`);
         } else {
-            io.to(UsersSocketId[sender]).emit("user offline", recipientUsername);
+            socket.emit("user offline", recipientUsername);
         }
     });
 
     // Handle user disconnect
     socket.on("disconnect", () => {
-        const username = localStorage.getItem("username");
-        if (username) {
-            delete UsersSocketId[username];
-            console.log(`User ${username} disconnected.`);
+        for (const [username, id] of Object.entries(UsersSocketId)) {
+            if (id === socket.id) {
+                delete UsersSocketId[username];
+                console.log(`User ${username} disconnected.`);
+                break;
+            }
         }
     });
 });

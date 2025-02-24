@@ -25,59 +25,59 @@
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.8.1/socket.io.js"></script>
     <script>
-        const config = require("./../config.js");
-        const socket = io(config.domain, { path: "/app1" });
-        
-        socket.on("connect", () => {
-            console.log("Connected to WebSocket on /app1");
-            let username = localStorage.getItem("username");
-            console.log(username)
-            if (!username) {
-                alert("You need to register first!");
-                return;
-            }
-            socket.emit("register", username);
+        document.addEventListener("DOMContentLoaded", () => {
+            const socket = io("http://localhost:3000", { path: "/app1" });
 
+            socket.on("connect", () => {
+                console.log("Connected to WebSocket on /app1");
+                let username = localStorage.getItem("username");
+                if (!username) {
+                    alert("You need to register first!");
+                    return;
+                }
+                socket.emit("register", username);
+            });
+
+            socket.on("disconnect", () => {
+                console.log("WebSocket disconnected");
+            });
+
+            function sendMessage() {
+                const recipientUsername = document.getElementById("users").value;
+                const message = document.getElementById("text_id").value;
+                const sender = localStorage.getItem("username");
+
+                if (!sender) {
+                    alert("You need to register first!");
+                    return;
+                }
+                if (!recipientUsername) {
+                    alert("Select a recipient!");
+                    return;
+                }
+                if (!message) {
+                    alert("Enter a message!");
+                    return;
+                }
+
+                const data = { sender, recipientUsername, message };
+                console.log("Sending private message:", data);
+                socket.emit("private message", data);
+                document.getElementById("text_id").value = ""; // Clear input after sending
+            }
+
+            socket.on("private message", ({ sender, message }) => {
+                const li = document.createElement("li");
+                li.textContent = `${sender}: ${message}`;
+                document.getElementById("messages").appendChild(li);
+            });
+
+            socket.on("user offline", (recipient) => {
+                alert(`User ${recipient} is not online.`);
+            });
+
+            document.querySelector("button").addEventListener("click", sendMessage);
         });
-
-        socket.on("disconnect", () => {
-            console.log("WebSocket disconnected");
-        });
-
-        function sendMessage() {
-            const recipientUsername = document.getElementById("users").value;
-            const message = document.getElementById("text_id").value;
-            const sender = localStorage.getItem("username");
-
-            if (!sender) {
-                alert("You need to register first!");
-                return;
-            }
-            if (!recipientUsername) {
-                alert("Select a recipient!");
-                return;
-            }
-            if (!message) {
-                alert("Enter a message!");
-                return;
-            }
-            
-
-            const data = { sender, recipientUsername, message };
-            console.log("Sending private message:", data);
-            socket.emit("private message", data);
-            document.getElementById("text_id").value = ""; // Clear input after sending
-        }
-
-        socket.on("private message", ({ sender, message }) => {
-            const li = document.createElement("li");
-            li.textContent = `${sender}: ${message}`;
-            document.getElementById("messages").appendChild(li);
-        });
-
-        socket.on("user offline", (recipient) => {
-        alert(`User ${recipient} is not online.`);
-    });
     </script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js"></script>

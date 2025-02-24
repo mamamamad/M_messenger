@@ -2,6 +2,7 @@ const express = require('express')
 const Router = express('roter')
 const path = require("path")
 const config = require("./../config.js");
+const cors = require("cors")
 
  
 

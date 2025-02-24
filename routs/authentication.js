@@ -80,6 +80,7 @@ function findUser(username, password) {
     const user = results[0]; 
     console.log(user);
     if (user.password === password) {
+      console.log("find user.")
       return (username, true); 
     } else {
       console.log("error in pass or user.")

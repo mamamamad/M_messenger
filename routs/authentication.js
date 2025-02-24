@@ -6,13 +6,15 @@ const { LocalStorage } = require("node-localstorage");
 const localStorage = new LocalStorage("./scratch");
 const config = require("./../config.js");
 const db_config = require("./../db_config.js");
-const mysql = require('mysql');
-const cors = require("cors")
+const mysql = require('mysql2');
+const cors = require("cors");
+
 
 var con = mysql.createConnection({
   host: db_config.host,
   user: db_config.user,
-  password: db_config.password
+  password: db_config.password,
+  database : db_config.database
 });
 con.connect(function(err) {
   if (err) throw err;
@@ -46,15 +48,16 @@ Router.get('/',(req,res)=>{
 })
 
 
-Router.post("/", (req, res) => {
+Router.post("/",async (req, res) => {
 
   const { username, password } = req.body; 
   
-  const foundObject = findUser(username,password)
+  const foundObject = await findUser(username,password);
   
   if (foundObject) {
     req.session.autotoken = { id: 123, username: foundObject.username };
     localStorage.setItem("username", foundObject.username)
+    
     res.redirect('/app1');
 
   } else {
@@ -64,28 +67,32 @@ Router.post("/", (req, res) => {
 });
 
 
-function findUser(username, password) {
-  const query = "SELECT username, password FROM users WHERE username = ?";
-  console.log("hi",username)
+async function findUser(username, password) {
+return new Promise((resolve,reject) => {const query = "SELECT password FROM users WHERE username = ?";
+  
   con.query(query, [username], (err, results) => {
     if (err) {
-      return (err, null);
+      console.log(err)
+      reject(err); 
     }
     
     if (results.length === 0) {
       console.log("not exist user.")
       resolve(false);
+      return;
     }
     
     const user = results[0]; 
-    console.log(user);
+    console.log(user.password);
     if (user.password === password) {
       console.log("find user.")
-      resolve(true);
+      resolve(true) ;
+      
     } else {
       console.log("error in pass or user.")
       resolve(false);
+      return
     }
   });
-}
+})};
 module.exports = Router

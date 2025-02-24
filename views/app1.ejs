@@ -7,68 +7,42 @@
 
     <link rel="stylesheet" href="css/style1.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.8.1/socket.io.js"></script>
+    
 </head>
 <body>
     <div class="container">
         <h1>Send a Message:</h1>
         <input type="text" id="text_id">
         <select id="users" name="user">
-            <option value="">Loading users...</option>
+            <% users.forEach(user => { %>
+                <option value="<%= user.username %>"><%= user.username %></option>
+            <% }) %>
         </select>
         <button onclick="sendMessage()">Send</button>
 
         <h1>Received Messages:</h1>
         <ul id="messages"></ul>
     </div>
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.8.1/socket.io.js"></script>
     <script>
-        const config = require("./config.js");
+        const config = require("./../config.js");
         const socket = io(config.domain, { path: "/app1" });
-
+        
         socket.on("connect", () => {
             console.log("Connected to WebSocket on /app1");
-            username = localStorage.getItem("username");
+            let username = localStorage.getItem("username");
             console.log(username)
+            if (!username) {
+                alert("You need to register first!");
+                return;
+            }
             socket.emit("register", username);
-            fetchUsers();
+
         });
 
         socket.on("disconnect", () => {
             console.log("WebSocket disconnected");
         });
-
-        async function fetchUsers() {
-        
-            try {
-                const response = await fetch(config.domain);
-                const users = await response.json();
-
-                const select = document.getElementById("users");
-                select.innerHTML = ""; // Clear existing options
-
-                users.forEach(user => {
-                    const option = document.createElement("option");
-                    option.value = user.username;
-                    option.textContent = user.username;
-                    select.appendChild(option);
-                });
-            } catch (error) {
-                console.log("errooos")
-                console.error("Failed to fetch users:", error);
-            }
-        }
-
-        function registerUser() {
-            const username = document.getElementById("username").value;
-            if (!username) {
-                alert("Please enter a username!");
-                return;
-            }
-            localStorage.setItem("username", username);
-            socket.emit("register", username);
-            alert(`Registered as: ${username}`);
-        }
 
         function sendMessage() {
             const recipientUsername = document.getElementById("users").value;
@@ -87,7 +61,8 @@
                 alert("Enter a message!");
                 return;
             }
-            console.log(sender)
+            
+
             const data = { sender, recipientUsername, message };
             console.log("Sending private message:", data);
             socket.emit("private message", data);
